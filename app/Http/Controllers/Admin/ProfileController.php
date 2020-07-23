@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use App\Profile;
+
 class ProfileController extends Controller
 {
    public function add()
@@ -20,9 +22,24 @@ class ProfileController extends Controller
    {
        return redirect('admin/profile/edit');
    }
-    public function create(Repuest $repuest)
+    public function create(Request $request)
    {
-       return redirect('admin/profile/create');
+       
+       
+       $this->validate($request, Profile::$rules);
+       
+       $profile = new Profile;
+       $form = $request->all();
+       
+       $profile->fill($form);
+       $profile->save();
+       
+        // フォームから送信されてきた_tokenを削除する
+      unset($form['_token']);
+      // フォームから送信されてきたimageを削除する
+      unset($form['image']);
+      
+      return redirect('admin/profile/create');
    }
 }
 
