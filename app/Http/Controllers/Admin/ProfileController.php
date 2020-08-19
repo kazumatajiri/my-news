@@ -30,16 +30,29 @@ class ProfileController extends Controller
        
        $profile = new Profile;
        $form = $request->all();
+              // フォームから送信されてきた_tokenを削除する
+       unset($form['_token']);
+      
        
        $profile->fill($form);
        $profile->save();
        
-        // フォームから送信されてきた_tokenを削除する
-      unset($form['_token']);
-      // フォームから送信されてきたimageを削除する
-      unset($form['image']);
+       
+      
       
       return redirect('admin/profile/create');
+   }
+   
+   public function index(Request $request)
+   {
+       $cond_name = $request->cond_name;
+       if ($cond_name != '') {
+           $posts = Profile::where('name', $cond_name)->get();
+       }else {
+           $posts = Profile::all();
+       }
+       return view('admin.news.index', ['posts' => $posts,
+       'cond_name' => $cond_name]);
    }
 }
 
