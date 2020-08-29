@@ -7,6 +7,10 @@ use App\Http\Controllers\Controller;
 
 use App\News;
 
+use App\History;
+
+use Carbon\Carbon;
+
 class NewsController extends Controller
 {
     //
@@ -72,7 +76,7 @@ class NewsController extends Controller
         $news = News::find($request->id);
         
         $news_form = $request->all();
-        if (iseet($news_form['image'])) {
+        if (isset($news_form['image'])) {
             $path = $request->file('image')->store('public/image');
             $news->image_path =basename($path);
         } elseif (isset($request->remove)) {
@@ -82,6 +86,12 @@ class NewsController extends Controller
         unset($news_form['_token']);
         
         $news->fill($news_form)->save();
+        
+        
+        $history = new History;
+        $history->news_id = $news->id;
+        $history->edited_at = Carbon::now();
+        $history->save();
         
         return redirect('admin/news');
     }
